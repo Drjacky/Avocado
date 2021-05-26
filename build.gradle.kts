@@ -40,7 +40,7 @@ intellij {
     type = properties("platformType")
     downloadSources = properties("platformDownloadSources").toBoolean()
     updateSinceUntilBuild = true
-//    alternativeIdePath = properties("alternativeIdeAppPath")
+    alternativeIdePath = properties("alternativeIdeAppPath")
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     setPlugins(*properties("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty).toTypedArray())
@@ -69,11 +69,11 @@ detekt {
 tasks {
     // Set the compatibility versions to 1.8
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
     }
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "1.8"
     }
 
     withType<Detekt> {
