@@ -27,6 +27,12 @@
                     text="_MyAction"
                     description="MyAction"/>
         </group>
+        <action id="com.github.drjacky.avocado.RightClickAction"
+                class="com.github.drjacky.avocado.actions.RightClickAction"
+                text="RightClickAction"
+                description="Right Click in the file">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
     </actions>
 
 </idea-plugin>
