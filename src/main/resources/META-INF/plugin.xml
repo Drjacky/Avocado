@@ -12,26 +12,12 @@
         <projectService serviceImplementation="com.github.drjacky.avocado.services.MyProjectService"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.drjacky.avocado.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
-
     <actions>
-        <group id="MyPlugin.TopMenu"
-               text="_MyPlugin"
-               description="MyPlugin Toolbar Menu">
-            <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="MyAction"
-                    class="com.github.drjacky.avocado.actions.MyAction"
-                    text="_MyAction"
-                    description="MyAction"/>
-        </group>
-        <action id="com.github.drjacky.avocado.RightClickAction"
-                class="com.github.drjacky.avocado.actions.RightClickAction"
-                text="RightClickAction"
-                description="Right Click in the file">
-            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        <action id="RightClickAction"
+                class="RightClickAction"
+                text="My Right Click Action"
+                description="Perform some action on right-click">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
     </actions>
 
