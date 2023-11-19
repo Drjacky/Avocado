@@ -10,11 +10,6 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.drjacky.avocado.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.drjacky.avocado.services.MyProjectService"/>
-    </extensions>
-
-    <extensions defaultExtensionNs="com.intellij">
 <!--        <project-component service="com.github.drjacky.avocado.MyProjectComponent" />-->
     </extensions>
 
