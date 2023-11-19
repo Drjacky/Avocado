@@ -13,10 +13,9 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 
-
 class RightClickAction : AnAction() {
     private val NODE_EXECUTABLE = "node"
-    private val AVOCADO_EXECUTABLE_PATH = "avocado"
+    private val AVOCADO_EXECUTABLE_PATH = "avocado" // Relative path to resources folder
 
     override fun actionPerformed(event: AnActionEvent) {
         // Check and install Node.js if needed
@@ -28,17 +27,17 @@ class RightClickAction : AnAction() {
         // Continue with the script execution
         val selectedFile = event.getData(CommonDataKeys.VIRTUAL_FILE)
         if (selectedFile != null && isXmlFileInDrawableFolder(selectedFile)) {
+            val fullPath = selectedFile.path
             try {
-                // Read the content of the XML file
-                val xmlContent = String(selectedFile.contentsToByteArray())
-
                 // Build the command to execute
-                val command = arrayOf(NODE_EXECUTABLE, AVOCADO_EXECUTABLE_PATH)
+                val command = arrayOf(NODE_EXECUTABLE, AVOCADO_EXECUTABLE_PATH, fullPath)
 
-                // Set the working directory if needed
-                val workingDirectory = selectedFile.parent.path
+                // Set the working directory (optional)
+                val workingDirectory = selectedFile.parent?.path
                 val processBuilder = ProcessBuilder(*command)
-                processBuilder.directory(File(workingDirectory))
+                if (workingDirectory != null) {
+                    processBuilder.directory(File(workingDirectory))
+                }
 
                 // Start the process
                 val process = processBuilder.start()
@@ -56,33 +55,31 @@ class RightClickAction : AnAction() {
                 val exitCode = process.waitFor()
                 println("Script executed with exit code: $exitCode")
 
-                // Write the modified content back to the XML file
-                selectedFile.setBinaryContent(outputStringBuilder.toString().toByteArray())
+                // Handle the output as needed
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        } else {
+            // Handle the case where selectedFile is null or not in the expected folder
+            Messages.showErrorDialog("Invalid file or folder.", "Error")
         }
     }
 
     private fun isNodeInstalled(): Boolean {
         val processBuilder = ProcessBuilder(NODE_EXECUTABLE, "--version")
-        try {
+        return try {
             val process = processBuilder.start()
             process.waitFor()
-            return true
+            true
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 
     private fun installNode() {
         // You can add platform-specific installation instructions here
-        Messages.showMessageDialog(
-            "Node.js is not installed. Please install Node.js.",
-            "Node.js Not Found",
-            Messages.getErrorIcon()
-        )
+        Messages.showMessageDialog("Node.js is not installed. Please install Node.js.", "Node.js Not Found", Messages.getErrorIcon())
     }
 
     private fun isXmlFileInDrawableFolder(file: VirtualFile): Boolean {
