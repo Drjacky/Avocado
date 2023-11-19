@@ -86,7 +86,8 @@ class RightClickAction : AnAction() {
     }
 
     private fun isXmlFileInDrawableFolder(file: VirtualFile): Boolean {
-        return file.extension == "xml" && "drawable" == file.parent?.name
+        val parentName = file.parent?.name
+        return file.extension == "xml" && (parentName == "drawable" || parentName?.startsWith("drawable-") == true)
     }
 
     override fun update(event: AnActionEvent) {
