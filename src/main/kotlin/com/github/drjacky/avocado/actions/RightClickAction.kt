@@ -1,17 +1,35 @@
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
-import java.io.BufferedReader
+import com.intellij.psi.PsiFile
 import java.io.File
-import java.io.InputStreamReader
 
 class RightClickAction : AnAction() {
-    private val NODE_EXECUTABLE = "node"
-    private val AVOCADO_EXECUTABLE_PATH = "avocado" // Relative path to resources folder
 
-    override fun actionPerformed(event: AnActionEvent) {
+    override fun actionPerformed(e: AnActionEvent) {
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+        if (psiFile != null) {
+            if (isXmlFileInDrawableFolder(psiFile)) {
+                // Run the Node.js script through Avocado
+                runNodeScript(psiFile.virtualFile)
+            } else {
+                // Handle the case where the file is not in the expected folder
+                println("Right-clicked on XML file, but not in the expected folder")
+            }
+        } else {
+            // Handle the case where the PSI file is null
+            println("Right-clicked, but PSI file is null")
+        }
+    }
+
+    private fun isXmlFileInDrawableFolder(psiFile: PsiFile): Boolean {
+        val parentFolder = psiFile.parent
+        return psiFile.name.endsWith(".xml") &&
+                (parentFolder != null && (parentFolder.name == "drawable" || parentFolder.name.startsWith("drawable-")))
+    }
+
+    private fun runNodeScript(file: VirtualFile) {
         // Check and install Node.js if needed
         if (!isNodeInstalled()) {
             installNode()
@@ -19,58 +37,37 @@ class RightClickAction : AnAction() {
         }
 
         // Continue with the script execution
-        val selectedFile = event.getData(CommonDataKeys.VIRTUAL_FILE)
-        if (selectedFile != null) {
-            val fullPath = selectedFile.path
-            if (isXmlFileInDrawableFolder(selectedFile)) {
-                try {
-                    // Build the command to execute
-                    val command = arrayOf(NODE_EXECUTABLE, AVOCADO_EXECUTABLE_PATH, fullPath)
+        val fullPath = file.path
+        try {
+            // Build the command to execute
+            val command = arrayOf("node", "avocado", fullPath)
 
-                    // Set the working directory (optional)
-                    val workingDirectory = selectedFile.parent?.path
-                    val processBuilder = ProcessBuilder(*command)
-                    if (workingDirectory != null) {
-                        processBuilder.directory(File(workingDirectory))
-                    }
-
-                    // Start the process
-                    val process = processBuilder.start()
-
-                    // Read the output (if any)
-                    val reader = BufferedReader(InputStreamReader(process.inputStream))
-                    var line: String?
-                    val outputStringBuilder = StringBuilder()
-                    while (reader.readLine().also { line = it } != null) {
-                        println(line)
-                        outputStringBuilder.append(line).append("\n")
-                    }
-
-                    // Wait for the process to complete
-                    val exitCode = process.waitFor()
-                    println("Script executed with exit code: $exitCode")
-
-                    // Handle the output as needed
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            } else {
-                // Handle the case where selectedFile is not in the expected folder
-                Messages.showErrorDialog("Selected file is not in the expected folder.", "Error")
+            // Set the working directory (optional)
+            val workingDirectory = file.parent?.path
+            val processBuilder = ProcessBuilder(*command)
+            if (workingDirectory != null) {
+                processBuilder.directory(File(workingDirectory))
             }
-        } else {
-            // Handle the case where selectedFile is null
-            Messages.showErrorDialog("Selected file is null.", "Error")
+
+            // Start the process
+            val process = processBuilder.start()
+
+            // Wait for the process to complete
+            val exitCode = process.waitFor()
+            println("Script executed with exit code: $exitCode")
+
+            // Handle the output as needed
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun isNodeInstalled(): Boolean {
-        val processBuilder = ProcessBuilder(NODE_EXECUTABLE, "--version")
+        val processBuilder = ProcessBuilder("node", "--version")
         return try {
             val process = processBuilder.start()
-            process.waitFor()
-            true
+            process.waitFor() == 0
         } catch (e: Exception) {
             false
         }
@@ -78,20 +75,6 @@ class RightClickAction : AnAction() {
 
     private fun installNode() {
         // You can add platform-specific installation instructions here
-        Messages.showMessageDialog(
-            "Node.js is not installed. Please install Node.js.",
-            "Node.js Not Found",
-            Messages.getErrorIcon()
-        )
-    }
-
-    private fun isXmlFileInDrawableFolder(file: VirtualFile): Boolean {
-        val parentName = file.parent?.name
-        return file.extension == "xml" && (parentName == "drawable" || parentName?.startsWith("drawable-") == true)
-    }
-
-    override fun update(event: AnActionEvent) {
-        val file = event.getData(CommonDataKeys.VIRTUAL_FILE)
-        event.presentation.isEnabledAndVisible = file != null && isXmlFileInDrawableFolder(file)
+        println("Node.js is not installed. Please install Node.js.")
     }
 }
