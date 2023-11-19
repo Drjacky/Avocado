@@ -1,0 +1,81 @@
+{
+  "_from": "avocado",
+  "_id": "avocado@1.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-JVEq0f3V7U0S8ebn/o942wwYylzolHBGUQQk2zHGqj5uEC5UqLdJ1NP0+D82Gdav1sxWuf+r+Rgb+2KbZs8HTQ==",
+  "_location": "/avocado",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "avocado",
+    "name": "avocado",
+    "escapedName": "avocado",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/avocado/-/avocado-1.0.0.tgz",
+  "_shasum": "e4a5c297da726e6493a90bfd6ca727986020d2d5",
+  "_spec": "avocado",
+  "_where": "/Users/drjacky",
+  "author": {
+    "name": "Alex Lockwood"
+  },
+  "bin": {
+    "avdo": "bin/avocado",
+    "avocado": "bin/avocado"
+  },
+  "bugs": {
+    "url": "https://github.com/alexjlockwood/avocado/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "commander": "^2.13.0",
+    "sax": "^1.2.4",
+    "util.promisify": "^1.0.0"
+  },
+  "deprecated": false,
+  "description": "Vector Drawable & Animated Vector Drawable optimization tool",
+  "devDependencies": {
+    "@types/chai": "^4.1.1",
+    "@types/mocha": "^2.2.46",
+    "@types/node": "^9.3.0",
+    "@types/sax": "^1.0.0",
+    "chai": "^4.1.2",
+    "coveralls": "^3.0.0",
+    "mocha": "^5.0.0",
+    "nyc": "^11.4.1",
+    "prettier": "1.10.2",
+    "should": "^13.2.1",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2"
+  },
+  "engines": {
+    "node": ">=6.12.0"
+  },
+  "homepage": "https://github.com/alexjlockwood/avocado#readme",
+  "keywords": [
+    "Android",
+    "Vector Drawable",
+    "Animated Vector Drawable"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "name": "avocado",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexjlockwood/avocado.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "mocha --require ts-node/register ./test/**/*.spec.ts",
+    "test-cov": "nyc -e '.ts' -r text -r lcov npm run test"
+  },
+  "types": "dist/index.d.ts",
+  "version": "1.0.0"
+}
