@@ -4,7 +4,8 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/23263-avocado.svg)](https://plugins.jetbrains.com/plugin/23263-avocado)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/23263-avocado.svg)](https://plugins.jetbrains.com/plugin/23263-avocado)
 
-## 
+##
+![Logo](https://raw.githubusercontent.com/Drjacky/Avocado/main/src/main/resources/META-INF/pluginIcon.svg)
 Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) that optimizes Android VectorDrawable (VD) and AnimatedVectorDrawable (AVD) xml files.
 
 <!-- Plugin description -->
