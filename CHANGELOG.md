@@ -3,5 +3,9 @@
 # Avocado Changelog
 
 ## [Unreleased]
+
+## [1.0.0] - 2023-12-02
 ### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+- Right-click on the vector xml file in the project pane
+- Right-click on the content of the vector xml file in the IDE Editor
+- Try to install the node in case of absent based on the OS type 
