@@ -1,6 +1,9 @@
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlFile
@@ -11,29 +14,37 @@ import java.io.InputStreamReader
 class AvocadoSizeItRightClickAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-        if (psiFile != null) {
-            if (isXmlFileInDrawableFolder(psiFile)) {
-                // Run the Node.js script through Avocado
-                runNodeScript("/Users/drjacky/Projectz/Avocado/src/main/resources/avocado", psiFile.virtualFile)
-                /*val project = e.project
-                val projectComponent = project?.let { ServiceManager.getService(it, MyProjectComponent::class.java) }
-                val avocadoScriptPath = projectComponent?.avocadoScriptPath
-                if (avocadoScriptPath != null) {
-                    runNodeScript(avocadoScriptPath, psiFile.virtualFile)
-                }*/
+        val projectObject: Project? = e.project
+        if (projectObject != null) {
+            val isDevelopmentMode = System.getProperty("idea.is.internal") == "true"
+            val avocadoScriptPath =
+                if (isDevelopmentMode) {
+                    "/Users/drjacky/Projectz/Avocado/src/main/resources/avocado"
+                } else {
+                    this.javaClass.getResource("avocado")?.toString()
+                }
+
+            if (avocadoScriptPath != null) {
+                val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+
+                if (psiFile != null) {
+                    if (isXmlFileInDrawableFolder(psiFile)) {
+                        runNodeScript(avocadoScriptPath, psiFile.virtualFile)
+                    } else {
+                        println("Right-clicked on XML file, but not in the expected folder")
+                    }
+                } else {
+                    println("Right-clicked, but PSI file is null")
+                }
             } else {
-                // Handle the case where the file is not in the expected folder
-                println("Right-clicked on XML file, but not in the expected folder")
+                println("avocadoScriptPath is blank!")
             }
         } else {
-            // Handle the case where the PSI file is null
-            println("Right-clicked, but PSI file is null")
+            println("Project path is null!")
         }
     }
 
     override fun update(e: AnActionEvent) {
-        // Enable or disable the action based on your criteria
         val psiFile = e.getData(CommonDataKeys.PSI_FILE)
         e.presentation.isEnabledAndVisible = isXmlFileInDrawableFolder(psiFile)
     }
@@ -59,7 +70,6 @@ class AvocadoSizeItRightClickAction : AnAction() {
             // Build the command to execute
             val command = arrayOf("node", avocadoScriptPath, fullPath)
 
-            // Set the working directory (optional)
             val workingDirectory = file.parent?.path
             val processBuilder = ProcessBuilder(*command)
             if (workingDirectory != null) {
@@ -79,9 +89,6 @@ class AvocadoSizeItRightClickAction : AnAction() {
             // Wait for the process to complete
             val exitCode = process.waitFor()
             println("Script executed with exit code: $exitCode")
-
-            // Handle the output as needed
-
         } catch (e: Exception) {
             e.printStackTrace()
         }

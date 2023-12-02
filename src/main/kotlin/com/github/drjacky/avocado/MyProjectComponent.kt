@@ -6,7 +6,7 @@ import java.io.File
 
 class MyProjectComponent(private val project: Project) : ProjectComponent {
 
-    var avocadoScriptPath: String? = null
+    /*var avocadoScriptPath: String? = null
 
     override fun projectOpened() {
         super.projectOpened()
@@ -20,5 +20,5 @@ class MyProjectComponent(private val project: Project) : ProjectComponent {
 
         // Now you can use avocadoScriptPath as the dynamic path
         println("Avocado Script Path: $avocadoScriptPath")
-    }
+    }*/
 }
