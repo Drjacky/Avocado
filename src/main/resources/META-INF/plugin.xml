@@ -14,11 +14,14 @@
     </extensions>
 
     <actions>
-        <action id="MyRightClickAction"
-                class="MyRightClickAction"
-                text="My Right Click Action"
-                description="Perform some action on right-click">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        <action id="AvocadoSizeItRightClickAction"
+                class="AvocadoSizeItRightClickAction"
+                text="Avocado-Size It"
+                description="Compress the vector size"
+                icon="/META-INF/icon.svg">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="PopupMenuActions" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>
     </actions>
 

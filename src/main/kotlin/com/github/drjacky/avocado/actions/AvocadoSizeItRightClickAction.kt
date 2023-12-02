@@ -1,8 +1,6 @@
-import com.github.drjacky.avocado.MyProjectComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlFile
@@ -10,7 +8,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 
-class MyRightClickAction : AnAction() {
+class AvocadoSizeItRightClickAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE)
