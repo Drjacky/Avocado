@@ -1,8 +1,8 @@
 # Avocado
 
 ![Build](https://github.com/Drjacky/Avocado/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
+[![Version](https://img.shields.io/jetbrains/plugin/v/23263-avocado.svg)](https://plugins.jetbrains.com/plugin/23263-avocado)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/23263-avocado.svg)](https://plugins.jetbrains.com/plugin/23263-avocado)
 
 ## 
 Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) that optimizes Android VectorDrawable (VD) and AnimatedVectorDrawable (AVD) xml files.
@@ -11,6 +11,11 @@ Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) 
 A plugin for Vector Drawable optimization tool
  
 <!-- Plugin description end -->
+
+## Requirement
+- Install node:
+  - `brew install node`
+  - Or https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
 
 ## Installation
 
