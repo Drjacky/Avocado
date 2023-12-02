@@ -1,9 +1,8 @@
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlFile
@@ -11,6 +10,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
+import javax.swing.SwingUtilities
 
 class AvocadoSizeItRightClickAction : AnAction() {
 
@@ -46,8 +46,15 @@ class AvocadoSizeItRightClickAction : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-        e.presentation.isEnabledAndVisible = isXmlFileInDrawableFolder(psiFile)
+        super.update(e)
+        SwingUtilities.invokeLater {
+            val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+            e.presentation.isEnabledAndVisible = isXmlFileInDrawableFolder(psiFile)
+        }
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.EDT
     }
 
     private fun isXmlFileInDrawableFolder(psiFile: PsiFile?): Boolean {
