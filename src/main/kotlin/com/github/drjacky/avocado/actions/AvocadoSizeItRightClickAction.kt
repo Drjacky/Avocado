@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlFile
 import java.io.BufferedReader
 import java.io.File
+import java.io.IOException
 import java.io.InputStreamReader
 
 class AvocadoSizeItRightClickAction : AnAction() {
@@ -105,7 +106,31 @@ class AvocadoSizeItRightClickAction : AnAction() {
     }
 
     private fun installNode() {
-        // You can add platform-specific installation instructions here
-        println("Node.js is not installed. Please install Node.js.")
+        val os = System.getProperty("os.name").toLowerCase()
+
+        val command = when {
+            os.contains("mac") || os.contains("macos") -> "brew install node"
+            os.contains("win") -> "choco install nodejs"
+            os.contains("linux") || os.contains("nix") || os.contains("nux") -> "apt-get install -y nodejs"
+            else -> {
+                println("Unsupported operating system: $os")
+                return
+            }
+        }
+
+        try {
+            val process = Runtime.getRuntime().exec(command)
+            val exitCode = process.waitFor()
+
+            if (exitCode == 0) {
+                println("Node.js installed successfully.")
+            } else {
+                println("Failed to install Node.js. Exit code: $exitCode")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
     }
 }
