@@ -9,15 +9,13 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
-    <extensions defaultExtensionNs="com.intellij">
-<!--        <project-component service="com.github.drjacky.avocado.MyProjectComponent" />-->
-    </extensions>
+    <extensions defaultExtensionNs="com.intellij"/>
 
     <actions>
         <action id="AvocadoSizeItRightClickAction"
                 class="AvocadoSizeItRightClickAction"
                 text="Avocado-Size It"
-                description="Compress the vector size"
+                description="Optimizes Android VectorDrawable (VD) and AnimatedVectorDrawable (AVD) xml files"
                 icon="/META-INF/icon.svg">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="PopupMenuActions" anchor="first"/>
