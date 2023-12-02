@@ -8,10 +8,9 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/Drjacky/Avocado/main/src/main/resources/META-INF/pluginIcon.svg" />
 </p>
-Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) that optimizes Android VectorDrawable (VD) and AnimatedVectorDrawable (AVD) xml files.
 
 <!-- Plugin description -->
-A plugin for Vector Drawable optimization tool
+Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) that optimizes Android VectorDrawable (VD) and AnimatedVectorDrawable (AVD) xml files.
  
 <!-- Plugin description end -->
 
