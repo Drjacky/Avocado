@@ -30,3 +30,6 @@ Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) 
 
   Download the [latest release](https://github.com/Drjacky/Avocado/releases/latest) and install it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+
+## Demo
+<img src="https://plugins.jetbrains.com/files/23263/screenshot_4e23331d-b5a5-412d-97a0-d4b477d729ee" />
