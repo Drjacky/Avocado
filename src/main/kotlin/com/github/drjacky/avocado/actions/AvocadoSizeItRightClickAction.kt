@@ -89,10 +89,12 @@ class AvocadoSizeItRightClickAction : AnAction() {
                 File(avocadoScriptPath.toURI())
             }
 
-            // Additional command-line parameters
-            val additionalParams = listOf("-i", fullPath)
+            if (!executableFile.exists()) {
+                println("Executable not found: ${executableFile.absolutePath}")
+                return
+            }
 
-            // Create the ProcessBuilder with the executable path and arguments
+            val additionalParams = listOf("-i", fullPath)
             val command = mutableListOf(executableFile.absolutePath)
             command.addAll(additionalParams)
 
@@ -103,26 +105,16 @@ class AvocadoSizeItRightClickAction : AnAction() {
 
             // Start the process
             val process = processBuilder.start()
-
-            // Get the input stream of the process
             val inputStream = process.inputStream
-
-            // Create a BufferedReader to read the output of the process
             val reader = BufferedReader(InputStreamReader(inputStream))
-
-            // Read and print the output
             var line: String?
             while (reader.readLine().also { line = it } != null) {
                 println(line)
             }
 
-            // Wait for the process to finish
             val exitCode = process.waitFor()
-
-            // Print the exit code
             println("Exit Code: $exitCode")
 
-            // Close the BufferedReader
             reader.close()
 
         } catch (e: IOException) {
