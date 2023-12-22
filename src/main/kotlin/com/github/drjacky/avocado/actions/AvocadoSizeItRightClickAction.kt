@@ -6,10 +6,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlFile
-import java.io.BufferedReader
-import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
+import java.io.*
+import java.net.URL
 import javax.swing.SwingUtilities
 
 class AvocadoSizeItRightClickAction : AnAction() {
@@ -17,20 +15,24 @@ class AvocadoSizeItRightClickAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val projectObject: Project? = e.project
         if (projectObject != null) {
-            val isDevelopmentMode = System.getProperty("idea.is.internal") == "true"
-            val avocadoScriptPath =
-                if (isDevelopmentMode) {
-                    "/Users/drjacky/Projectz/Avocado/src/main/resources/avocado"
-                } else {
-                    this.javaClass.getResource("avocado")?.toString()
+            val os = System.getProperty("os.name").toLowerCase()
+            val executableName = when {
+                os.contains("mac") || os.contains("macos") -> "avocado-macos"
+                os.contains("win") -> "avocado-win.exe"
+//                os.contains("linux") || os.contains("nix") || os.contains("nux") -> "apt-get install -y nodejs"
+                else -> {
+                    println("Unsupported operating system: $os")
+                    return
                 }
+            }
+            val avocadoScriptPath = this::class.java.classLoader.getResource(executableName)
 
             if (avocadoScriptPath != null) {
                 val psiFile = e.getData(CommonDataKeys.PSI_FILE)
 
                 if (psiFile != null) {
                     if (isXmlFileInDrawableFolder(psiFile)) {
-                        runNodeScript(avocadoScriptPath, psiFile.virtualFile)
+                        runNodeScript(avocadoScriptPath, executableName, psiFile.virtualFile)
                     } else {
                         println("Right-clicked on XML file, but not in the expected folder")
                     }
@@ -65,75 +67,64 @@ class AvocadoSizeItRightClickAction : AnAction() {
                 parentFolder.parent?.name == "res"
     }
 
-    private fun runNodeScript(avocadoScriptPath: String, file: VirtualFile) {
-        // Check and install Node.js if needed
-        if (!isNodeInstalled()) {
-            installNode()
-            return
-        }
-
-        // Continue with the script execution
+    private fun runNodeScript(avocadoScriptPath: URL, executableName: String, file: VirtualFile) {
         val fullPath = file.path
         try {
-            // Build the command to execute
-            val command = arrayOf("node", avocadoScriptPath, fullPath)
+            val executableFile: File = if (avocadoScriptPath.protocol == "jar") {
+                val tempFile = createTempFile(executableName, null)
+                tempFile.deleteOnExit()
 
-            val workingDirectory = file.parent?.path
-            val processBuilder = ProcessBuilder(*command)
-            if (workingDirectory != null) {
-                processBuilder.directory(File(workingDirectory))
+                // Copy the executable from the JAR to the temporary file
+                avocadoScriptPath.openStream().use { input ->
+                    FileOutputStream(tempFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                // Set execute permission on the temporary file
+                tempFile.setExecutable(true)
+
+                tempFile
+            } else {
+                File(avocadoScriptPath.toURI())
             }
+
+            // Additional command-line parameters
+            val additionalParams = listOf("-i", fullPath)
+
+            // Create the ProcessBuilder with the executable path and arguments
+            val command = mutableListOf(executableFile.absolutePath)
+            command.addAll(additionalParams)
+
+            val processBuilder = ProcessBuilder(command)
+
+            // Redirect error stream to output stream
+            processBuilder.redirectErrorStream(true)
 
             // Start the process
             val process = processBuilder.start()
 
-            // Capture and print the error stream
-            val errorReader = BufferedReader(InputStreamReader(process.errorStream))
-            var errorLine: String?
-            while (errorReader.readLine().also { errorLine = it } != null) {
-                println("Avocado Error: $errorLine")
+            // Get the input stream of the process
+            val inputStream = process.inputStream
+
+            // Create a BufferedReader to read the output of the process
+            val reader = BufferedReader(InputStreamReader(inputStream))
+
+            // Read and print the output
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                println(line)
             }
 
-            // Wait for the process to complete
-            val exitCode = process.waitFor()
-            println("Script executed with exit code: $exitCode")
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun isNodeInstalled(): Boolean {
-        val processBuilder = ProcessBuilder("node", "--version")
-        return try {
-            val process = processBuilder.start()
-            process.waitFor() == 0
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    private fun installNode() {
-        val os = System.getProperty("os.name").toLowerCase()
-
-        val command = when {
-            os.contains("mac") || os.contains("macos") -> "brew install node"
-            os.contains("win") -> "choco install nodejs"
-            os.contains("linux") || os.contains("nix") || os.contains("nux") -> "apt-get install -y nodejs"
-            else -> {
-                println("Unsupported operating system: $os")
-                return
-            }
-        }
-
-        try {
-            val process = Runtime.getRuntime().exec(command)
+            // Wait for the process to finish
             val exitCode = process.waitFor()
 
-            if (exitCode == 0) {
-                println("Node.js installed successfully.")
-            } else {
-                println("Failed to install Node.js. Exit code: $exitCode")
-            }
+            // Print the exit code
+            println("Exit Code: $exitCode")
+
+            // Close the BufferedReader
+            reader.close()
+
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: InterruptedException) {
