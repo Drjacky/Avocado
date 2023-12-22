@@ -14,7 +14,6 @@
 
 - Not functional on macOS ([#110](https://github.com/Drjacky/Avocado/issues/110))
 
-
 ## [1.0.0] - 2023-12-02
 
 ### Added
