@@ -17,9 +17,9 @@ class AvocadoSizeItRightClickAction : AnAction() {
         if (projectObject != null) {
             val os = System.getProperty("os.name").toLowerCase()
             val executableName = when {
-                os.contains("mac") || os.contains("macos") -> "avocado-macos"
+                os.contains("mac") -> "avocado-macos"
                 os.contains("win") -> "avocado-win.exe"
-//                os.contains("linux") || os.contains("nix") || os.contains("nux") -> "apt-get install -y nodejs"
+                os.contains("linux") -> "avocado-linux"
                 else -> {
                     println("Unsupported operating system: $os")
                     return
