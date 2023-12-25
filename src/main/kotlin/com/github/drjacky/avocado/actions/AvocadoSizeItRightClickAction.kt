@@ -9,6 +9,7 @@ import com.intellij.psi.xml.XmlFile
 import java.io.*
 import java.net.URL
 import javax.swing.SwingUtilities
+import kotlin.io.path.createTempFile
 
 class AvocadoSizeItRightClickAction : AnAction() {
 
@@ -71,7 +72,8 @@ class AvocadoSizeItRightClickAction : AnAction() {
         val fullPath = file.path
         try {
             val executableFile: File = if (avocadoScriptPath.protocol == "jar") {
-                val tempFile = createTempFile(executableName, null)
+                val tempFile = createTempFile(executableName).toFile()
+
                 tempFile.deleteOnExit()
 
                 // Copy the executable from the JAR to the temporary file
