@@ -2,7 +2,13 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
+import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlFile
@@ -33,7 +39,14 @@ class AvocadoSizeItRightClickAction : AnAction() {
 
                 if (psiFile != null) {
                     if (isXmlFileInDrawableFolder(psiFile)) {
-                        runNodeScript(avocadoScriptPath, executableName, psiFile.virtualFile)
+                        val task: Task.Backgroundable =
+                            object : Task.Backgroundable(e.project, "Avocado Size It", true) {
+                                override fun run(indicator: ProgressIndicator) {
+                                    avocadoSizeIt(projectObject, avocadoScriptPath, executableName, psiFile.virtualFile)
+                                }
+                            }
+                        ProgressManager.getInstance()
+                            .runProcessWithProgressAsynchronously(task, BackgroundableProcessIndicator(task))
                     } else {
                         println("Right-clicked on XML file, but not in the expected folder")
                     }
@@ -68,7 +81,7 @@ class AvocadoSizeItRightClickAction : AnAction() {
                 parentFolder.parent?.name == "res"
     }
 
-    private fun runNodeScript(avocadoScriptPath: URL, executableName: String, file: VirtualFile) {
+    private fun avocadoSizeIt(project: Project, avocadoScriptPath: URL, executableName: String, file: VirtualFile) {
         val fullPath = file.path
         try {
             val executableFile: File = if (avocadoScriptPath.protocol == "jar") {
@@ -119,10 +132,22 @@ class AvocadoSizeItRightClickAction : AnAction() {
 
             reader.close()
 
+            refreshFile(file, project)
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
     }
+
+    private fun refreshFile(file: VirtualFile, project: Project) {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "", false) {
+            override fun run(indicator: ProgressIndicator) {
+                ApplicationManager.getApplication().invokeAndWait {
+                    VfsUtil.markDirtyAndRefresh(true, false, true, file)
+                }
+            }
+        })
+    }
+
 }
