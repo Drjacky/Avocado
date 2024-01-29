@@ -10,8 +10,7 @@ import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import com.intellij.psi.xml.XmlFile
+import com.intellij.vcsUtil.VcsFileUtil
 import java.io.*
 import java.net.URL
 import javax.swing.SwingUtilities
@@ -20,9 +19,9 @@ import kotlin.io.path.createTempFile
 class AvocadoSizeItRightClickAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        val projectObject: Project? = e.project
-        if (projectObject != null) {
-            val os = System.getProperty("os.name").toLowerCase()
+        val project: Project? = e.project
+        if (project != null) {
+            val os = System.getProperty("os.name").lowercase()
             val executableName = when {
                 os.contains("mac") -> "avocado-macos"
                 os.contains("win") -> "avocado-win.exe"
@@ -35,23 +34,16 @@ class AvocadoSizeItRightClickAction : AnAction() {
             val avocadoScriptPath = this::class.java.classLoader.getResource(executableName)
 
             if (avocadoScriptPath != null) {
-                val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+                val files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
 
-                if (psiFile != null) {
-                    if (isXmlFileInDrawableFolder(psiFile)) {
-                        val task: Task.Backgroundable =
-                            object : Task.Backgroundable(e.project, "Avocado Size It", true) {
-                                override fun run(indicator: ProgressIndicator) {
-                                    avocadoSizeIt(projectObject, avocadoScriptPath, executableName, psiFile.virtualFile)
-                                }
-                            }
-                        ProgressManager.getInstance()
-                            .runProcessWithProgressAsynchronously(task, BackgroundableProcessIndicator(task))
+                if (!files.isNullOrEmpty()) {
+                    if (isXmlFileInDrawableFolder(files)) {
+                        processFilesWithAvocado(project, avocadoScriptPath, executableName, files)
                     } else {
-                        println("Right-clicked on XML file, but not in the expected folder")
+                        println("Right-clicked on file, but not in the expected folder or not xml")
                     }
                 } else {
-                    println("Right-clicked, but PSI file is null")
+                    println("Right-clicked, but files are null/empty")
                 }
             } else {
                 println("avocadoScriptPath is blank!")
@@ -61,27 +53,36 @@ class AvocadoSizeItRightClickAction : AnAction() {
         }
     }
 
-    override fun update(e: AnActionEvent) {
-        super.update(e)
-        SwingUtilities.invokeLater {
-            val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-            e.presentation.isEnabledAndVisible = isXmlFileInDrawableFolder(psiFile)
+    private fun processFilesWithAvocado(
+        project: Project,
+        avocadoScriptPath: URL,
+        executableName: String,
+        files: Array<VirtualFile>
+    ) {
+        val task = object : Task.Backgroundable(project, project.name, true) {
+            override fun run(indicator: ProgressIndicator) {
+                val processedFiles = files.map { file ->
+                    file.takeIf {
+                        avocadoSizeIt(avocadoScriptPath, executableName, file)
+                    }
+                }
+                refreshFiles(processedFiles, project)
+            }
         }
+        ProgressManager.getInstance()
+            .runProcessWithProgressAsynchronously(task, BackgroundableProcessIndicator(task))
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
+    private fun isXmlFileInDrawableFolder(virtualFiles: Array<VirtualFile>?): Boolean {
+        return virtualFiles?.all { virtualFile ->
+            val parentFolder = virtualFile.parent
+            virtualFile.extension == "xml" &&
+                    (parentFolder?.name == "drawable" || parentFolder?.name?.startsWith("drawable-") == true) &&
+                    parentFolder.parent?.name == "res"
+        } ?: false
     }
 
-    private fun isXmlFileInDrawableFolder(psiFile: PsiFile?): Boolean {
-        val parentFolder = psiFile?.virtualFile?.parent
-        return psiFile is XmlFile &&
-                psiFile.virtualFile?.extension == "xml" &&
-                (parentFolder?.name == "drawable" || parentFolder?.name?.startsWith("drawable-") == true) &&
-                parentFolder.parent?.name == "res"
-    }
-
-    private fun avocadoSizeIt(project: Project, avocadoScriptPath: URL, executableName: String, file: VirtualFile) {
+    private fun avocadoSizeIt(avocadoScriptPath: URL, executableName: String, file: VirtualFile): Boolean {
         val fullPath = file.path
         try {
             val executableFile: File = if (avocadoScriptPath.protocol == "jar") {
@@ -106,7 +107,7 @@ class AvocadoSizeItRightClickAction : AnAction() {
 
             if (!executableFile.exists()) {
                 println("Executable not found: ${executableFile.absolutePath}")
-                return
+                return false
             }
 
             val additionalParams = listOf("-i", fullPath)
@@ -132,22 +133,35 @@ class AvocadoSizeItRightClickAction : AnAction() {
 
             reader.close()
 
-            refreshFile(file, project)
+            return true
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
+
+        return false
     }
 
-    private fun refreshFile(file: VirtualFile, project: Project) {
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "", false) {
+    private fun refreshFiles(files: List<VirtualFile?>, project: Project) {
+        val task = object : Task.Backgroundable(project, "", false) {
             override fun run(indicator: ProgressIndicator) {
                 ApplicationManager.getApplication().invokeAndWait {
-                    VfsUtil.markDirtyAndRefresh(true, false, true, file)
+                    VfsUtil.markDirtyAndRefresh(true, false, true, *files.toTypedArray())
+                    VcsFileUtil.markFilesDirty(project, files)
                 }
             }
-        })
+        }
+        ProgressManager.getInstance().run(task)
     }
 
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        SwingUtilities.invokeLater {
+            val files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
+            e.presentation.isEnabledAndVisible = isXmlFileInDrawableFolder(files)
+        }
+    }
 }

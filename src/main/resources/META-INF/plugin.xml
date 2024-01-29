@@ -20,6 +20,7 @@
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="PopupMenuActions" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+            <add-to-group group-id="ChangesViewPopupMenu" anchor="last" />
         </action>
     </actions>
 
