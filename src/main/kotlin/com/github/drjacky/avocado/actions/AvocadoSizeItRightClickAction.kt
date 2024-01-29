@@ -59,7 +59,7 @@ class AvocadoSizeItRightClickAction : AnAction() {
         executableName: String,
         files: Array<VirtualFile>
     ) {
-        val task = object : Task.Backgroundable(project, project.name, true) {
+        val task = object : Task.Backgroundable(project, "Avocado-Size It", true) {
             override fun run(indicator: ProgressIndicator) {
                 val executableFile = createTempExecutableFile(avocadoScriptPath, executableName)
                 if (executableFile.exists()) {
