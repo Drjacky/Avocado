@@ -61,16 +61,45 @@ class AvocadoSizeItRightClickAction : AnAction() {
     ) {
         val task = object : Task.Backgroundable(project, project.name, true) {
             override fun run(indicator: ProgressIndicator) {
-                val processedFiles = files.mapNotNull { file ->
-                    file.takeIf {
-                        avocadoSizeIt(avocadoScriptPath, executableName, file)
+                val executableFile = createTempExecutableFile(avocadoScriptPath, executableName)
+                if (executableFile.exists()) {
+                    val processedFiles = files.mapNotNull { file ->
+                        file.takeIf {
+                            avocadoSizeIt(executableFile.absolutePath, file)
+                        }
                     }
+                    refreshFiles(processedFiles, project)
+                } else {
+                    println("Avocado executable not found: ${executableFile.absolutePath}")
                 }
-                refreshFiles(processedFiles, project)
             }
         }
         ProgressManager.getInstance()
             .runProcessWithProgressAsynchronously(task, BackgroundableProcessIndicator(task))
+    }
+
+    private fun createTempExecutableFile(avocadoScriptPath: URL, executableName: String): File {
+        val executableFile: File = if (avocadoScriptPath.protocol == "jar") {
+            val tempFile = createTempFile(executableName).toFile()
+
+            tempFile.deleteOnExit()
+
+            // Copy the executable from the JAR to the temporary file
+            avocadoScriptPath.openStream().use { input ->
+                FileOutputStream(tempFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            // Set execute permission on the temporary file
+            tempFile.setExecutable(true)
+
+            tempFile
+        } else {
+            File(avocadoScriptPath.toURI())
+        }
+
+        return executableFile
     }
 
     private fun isXmlFileInDrawableFolder(virtualFiles: Array<VirtualFile>?): Boolean {
@@ -82,36 +111,11 @@ class AvocadoSizeItRightClickAction : AnAction() {
         } ?: false
     }
 
-    private fun avocadoSizeIt(avocadoScriptPath: URL, executableName: String, file: VirtualFile): Boolean {
+    private fun avocadoSizeIt(executableFilePath: String, file: VirtualFile): Boolean {
         val fullPath = file.path
         try {
-            val executableFile: File = if (avocadoScriptPath.protocol == "jar") {
-                val tempFile = createTempFile(executableName).toFile()
-
-                tempFile.deleteOnExit()
-
-                // Copy the executable from the JAR to the temporary file
-                avocadoScriptPath.openStream().use { input ->
-                    FileOutputStream(tempFile).use { output ->
-                        input.copyTo(output)
-                    }
-                }
-
-                // Set execute permission on the temporary file
-                tempFile.setExecutable(true)
-
-                tempFile
-            } else {
-                File(avocadoScriptPath.toURI())
-            }
-
-            if (!executableFile.exists()) {
-                println("Executable not found: ${executableFile.absolutePath}")
-                return false
-            }
-
             val additionalParams = listOf("-i", fullPath)
-            val command = mutableListOf(executableFile.absolutePath)
+            val command = mutableListOf(executableFilePath)
             command.addAll(additionalParams)
 
             val processBuilder = ProcessBuilder(command)
