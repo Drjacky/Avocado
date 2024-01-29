@@ -61,7 +61,7 @@ class AvocadoSizeItRightClickAction : AnAction() {
     ) {
         val task = object : Task.Backgroundable(project, project.name, true) {
             override fun run(indicator: ProgressIndicator) {
-                val processedFiles = files.map { file ->
+                val processedFiles = files.mapNotNull { file ->
                     file.takeIf {
                         avocadoSizeIt(avocadoScriptPath, executableName, file)
                     }
@@ -143,7 +143,7 @@ class AvocadoSizeItRightClickAction : AnAction() {
         return false
     }
 
-    private fun refreshFiles(files: List<VirtualFile?>, project: Project) {
+    private fun refreshFiles(files: List<VirtualFile>, project: Project) {
         val task = object : Task.Backgroundable(project, "", false) {
             override fun run(indicator: ProgressIndicator) {
                 ApplicationManager.getApplication().invokeAndWait {
