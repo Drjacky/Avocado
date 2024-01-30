@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [3.3.3] - 2024-01-30
+
+### Added
+
+- Multiple file selection [#111](https://github.com/Drjacky/Avocado/issues/111)
+- Have the Avocado in the Local Changes window [#112](https://github.com/Drjacky/Avocado/issues/112)
+
 ## [3.2.2] - 2023-12-26
 
 ### Added
@@ -35,7 +42,8 @@
 - Right-click on the content of the vector xml file in the IDE Editor
 - Try to install the node in case of absent based on the OS type
 
-[Unreleased]: https://github.com/Drjacky/Avocado/compare/v3.2.2...HEAD
+[Unreleased]: https://github.com/Drjacky/Avocado/compare/v3.3.3...HEAD
+[3.3.3]: https://github.com/Drjacky/Avocado/commits/v3.3.3
 [3.2.2]: https://github.com/Drjacky/Avocado/commits/v3.2.2
 [2.0.1]: https://github.com/Drjacky/Avocado/commits/v2.0.1
 [1.0.0]: https://github.com/Drjacky/Avocado/commits/v1.0.0
