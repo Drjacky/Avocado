@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [3.5.5] - 2024-05-19
+
+### Added
+
+- Have the Avocado in the Commit Changes dialog [#115](https://github.com/Drjacky/Avocado/issues/115)
+- Support IntelliJ IDEA 2024.1.1
+- Have the Avocado on drawable(-*) folder(s) [#117](https://github.com/Drjacky/Avocado/issues/117)
+- Add Crash Reporting
+
 ## [3.3.3] - 2024-01-30
 
 ### Added
