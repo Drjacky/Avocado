@@ -21,6 +21,7 @@
             <add-to-group group-id="PopupMenuActions" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
             <add-to-group group-id="ChangesViewPopupMenu" anchor="last" />
+            <add-to-group group-id="Vcs.MessageActionGroup" anchor="last"/>
         </action>
     </actions>
 
