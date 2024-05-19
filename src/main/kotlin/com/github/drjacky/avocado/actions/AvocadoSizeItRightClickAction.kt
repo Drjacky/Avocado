@@ -41,6 +41,14 @@ class AvocadoSizeItRightClickAction : AnAction() {
                 if (!files.isNullOrEmpty()) {
                     if (isXmlFileInDrawableFolder(files)) {
                         processFilesWithAvocado(project, avocadoScriptPath, executableName, files)
+                    } else if (isDrawableFolder(files)) {
+                        val folder = files[0]
+                        val filePaths = mutableListOf<VirtualFile>()
+
+                        folder.children.forEach { child ->
+                            filePaths.add(child)
+                        }
+                        processFilesWithAvocado(project, avocadoScriptPath, executableName, filePaths.toTypedArray())
                     } else {
                         println("Right-clicked on file, but not in the expected folder or not xml")
                     }
@@ -113,6 +121,13 @@ class AvocadoSizeItRightClickAction : AnAction() {
         } ?: false
     }
 
+    private fun isDrawableFolder(virtualFiles: Array<VirtualFile>?): Boolean {
+        return virtualFiles?.all { virtualFile ->
+            val parentFolder = virtualFile.parent
+            virtualFile.isDirectory && (virtualFile.name == "drawable" || virtualFile.name.startsWith("drawable-")) && parentFolder?.name == "res"
+        } ?: false
+    }
+
     private fun avocadoSizeIt(executableFilePath: String, file: VirtualFile): Boolean {
         val fullPath = file.path
         try {
@@ -170,7 +185,8 @@ class AvocadoSizeItRightClickAction : AnAction() {
         super.update(e)
         SwingUtilities.invokeLater {
             val files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
-            e.presentation.isEnabledAndVisible = isXmlFileInDrawableFolder(files)
+            e.presentation.isEnabledAndVisible =
+                files != null && isXmlFileInDrawableFolder(files) || isDrawableFolder(files)
         }
     }
 }
