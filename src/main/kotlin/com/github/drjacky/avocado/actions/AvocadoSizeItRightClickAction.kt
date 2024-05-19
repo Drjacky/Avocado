@@ -11,8 +11,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.vcsUtil.VcsFileUtil
 import com.intellij.vcsUtil.VcsUtil
+import io.sentry.Sentry
 import java.io.*
 import java.net.URL
 import javax.swing.SwingUtilities
@@ -157,8 +157,10 @@ class AvocadoSizeItRightClickAction : AnAction() {
             return true
         } catch (e: IOException) {
             e.printStackTrace()
+            Sentry.captureException(e)
         } catch (e: InterruptedException) {
             e.printStackTrace()
+            Sentry.captureException(e)
         }
 
         return false
