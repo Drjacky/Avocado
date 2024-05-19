@@ -9,7 +9,15 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
-    <extensions defaultExtensionNs="com.intellij"/>
+    <application-components>
+        <component>
+            <implementation-class>com.github.drjacky.avocado.MyApplicationComponent</implementation-class>
+        </component>
+    </application-components>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <errorHandler implementation="com.github.drjacky.avocado.log.SentryErrorReporter"/>
+    </extensions>
 
     <actions>
         <action id="AvocadoSizeItRightClickAction"

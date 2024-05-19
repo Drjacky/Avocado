@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+    id("io.sentry.jvm.gradle") version "4.6.0"
 }
 
 group = properties("pluginGroup").get()
@@ -54,6 +55,14 @@ koverReport {
             onCheck = true
         }
     }
+}
+
+sentry {
+    includeSourceContext = true
+
+    org = "drjacky"
+    projectName = "avocado"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN_AVOCADO")
 }
 
 tasks {
@@ -116,4 +125,12 @@ tasks {
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
         channels = properties("pluginVersion").map { listOf(it.substringAfter('-', "").substringBefore('.').ifEmpty { "default" }) }
     }
+}
+
+tasks.withType<JavaExec> {
+    systemProperty("pluginVersion", project.findProperty("pluginVersion") as String)
+}
+
+tasks.withType<Test> {
+    systemProperty("pluginVersion", project.findProperty("pluginVersion") as String)
 }
