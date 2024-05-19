@@ -8,9 +8,11 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.vcsUtil.VcsFileUtil
+import com.intellij.vcsUtil.VcsUtil
 import java.io.*
 import java.net.URL
 import javax.swing.SwingUtilities
@@ -148,11 +150,14 @@ class AvocadoSizeItRightClickAction : AnAction() {
     }
 
     private fun refreshFiles(files: List<VirtualFile>, project: Project) {
-        val task = object : Task.Backgroundable(project, "", false) {
+        val task = object : Task.Backgroundable(project, "Refresh file(s)", false) {
             override fun run(indicator: ProgressIndicator) {
                 ApplicationManager.getApplication().invokeAndWait {
                     VfsUtil.markDirtyAndRefresh(true, false, true, *files.toTypedArray())
-                    VcsFileUtil.markFilesDirty(project, files)
+
+                    val dirtyScopeManager = VcsDirtyScopeManager.getInstance(project)
+                    val filePaths = files.map { VcsUtil.getFilePath(it) }
+                    dirtyScopeManager.filePathsDirty(filePaths, null)
                 }
             }
         }
