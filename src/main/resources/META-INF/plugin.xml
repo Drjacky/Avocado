@@ -25,11 +25,11 @@
                 text="Avocado-Size It"
                 description="Optimizes Android VectorDrawable (VD) and AnimatedVectorDrawable (AVD) xml files"
                 icon="/META-INF/icon.svg">
-            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <add-to-group group-id="PopupMenuActions" anchor="first"/>
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
-            <add-to-group group-id="ChangesViewPopupMenu" anchor="last" />
-            <add-to-group group-id="Vcs.MessageActionGroup" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+            <add-to-group group-id="PopupMenuActions"/>
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+            <add-to-group group-id="ChangesViewPopupMenu"/>
+            <add-to-group group-id="Vcs.MessageActionGroup"/>
         </action>
     </actions>
 
