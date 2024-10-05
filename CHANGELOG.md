@@ -57,9 +57,10 @@
 - Right-click on the content of the vector xml file in the IDE Editor
 - Try to install the node in case of absent based on the OS type
 
-[Unreleased]: https://github.com/Drjacky/Avocado/compare/v3.5.5...HEAD
+[Unreleased]: https://github.com/Drjacky/Avocado/compare/v3.5.6...HEAD
+[3.5.6]: https://github.com/Drjacky/Avocado/compare/v3.5.5...v3.5.6
 [3.5.5]: https://github.com/Drjacky/Avocado/compare/v3.3.3...v3.5.5
-[3.3.3]: https://github.com/Drjacky/Avocado/commits/v3.3.3
-[3.2.2]: https://github.com/Drjacky/Avocado/commits/v3.2.2
-[2.0.1]: https://github.com/Drjacky/Avocado/commits/v2.0.1
+[3.3.3]: https://github.com/Drjacky/Avocado/compare/v3.2.2...v3.3.3
+[3.2.2]: https://github.com/Drjacky/Avocado/compare/v2.0.1...v3.2.2
+[2.0.1]: https://github.com/Drjacky/Avocado/compare/v1.0.0...v2.0.1
 [1.0.0]: https://github.com/Drjacky/Avocado/commits/v1.0.0
