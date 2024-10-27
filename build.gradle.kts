@@ -77,7 +77,7 @@ tasks {
     patchPluginXml {
         version = properties("pluginVersion")
         sinceBuild = properties("pluginSinceBuild")
-        // untilBuild = properties("pluginUntilBuild") //Commented to have compatibility with all IDEs starting from the version mentioned in sinceBuild
+        untilBuild = provider { null }
 
         // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
         pluginDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
