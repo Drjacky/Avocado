@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+## [3.5.7] - 2024-10-27
+
+### Fixed
+
+- Support the latest IntelliJ IDEA
+
 ## [3.5.6] - 2024-10-05
 
 ### Fixed
@@ -57,7 +63,8 @@
 - Right-click on the content of the vector xml file in the IDE Editor
 - Try to install the node in case of absent based on the OS type
 
-[Unreleased]: https://github.com/Drjacky/Avocado/compare/v3.5.6...HEAD
+[Unreleased]: https://github.com/Drjacky/Avocado/compare/v3.5.7...HEAD
+[3.5.7]: https://github.com/Drjacky/Avocado/compare/v3.5.6...v3.5.7
 [3.5.6]: https://github.com/Drjacky/Avocado/compare/v3.5.5...v3.5.6
 [3.5.5]: https://github.com/Drjacky/Avocado/compare/v3.3.3...v3.5.5
 [3.3.3]: https://github.com/Drjacky/Avocado/compare/v3.2.2...v3.3.3
