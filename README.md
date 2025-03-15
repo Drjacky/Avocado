@@ -27,3 +27,7 @@ Avocado is a plugin that uses alexjlockwood/avocado line tool (similar to svgo) 
 
 ## Demo
 <img src="https://plugins.jetbrains.com/files/23263/screenshot_4e23331d-b5a5-412d-97a0-d4b477d729ee" />
+
+## Star History Chart 
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Drjacky/Avocado&Date&type=Date)](https://star-history.com/#Drjacky/Avocado&Date&Date)
